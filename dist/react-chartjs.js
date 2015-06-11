@@ -177,9 +177,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    });
 	  } else {
-	    while (chart.scale.xLabels.length > nextProps.data.labels.length) {
-	      chart.removeData();
-	    }
+	    // while (chart.scale.xLabels.length > nextProps.data.labels.length) {
+	    //   chart.removeData();
+	    // }
 	    nextProps.data.datasets.forEach(function(set, setIndex) {
 	      set.data.forEach(function(val, pointIndex) {
 	        if (typeof(chart.datasets[setIndex][dataKey][pointIndex]) == "undefined") {

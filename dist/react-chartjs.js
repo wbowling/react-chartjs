@@ -7,7 +7,7 @@
 		exports["react-chartjs"] = factory(require("Chartjs"), require("react"));
 	else
 		root["react-chartjs"] = factory(root["Chartjs"], root["React"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_8__, __WEBPACK_EXTERNAL_MODULE_9__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_3__, __WEBPACK_EXTERNAL_MODULE_4__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -56,12 +56,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	  Bar: __webpack_require__(1),
-	  Doughnut: __webpack_require__(2),
-	  Line: __webpack_require__(3),
-	  Pie: __webpack_require__(4),
-	  PolarArea: __webpack_require__(5),
-	  Radar: __webpack_require__(6),
-	  createClass: __webpack_require__(7).createClass
+	  Doughnut: __webpack_require__(5),
+	  Line: __webpack_require__(6),
+	  Pie: __webpack_require__(7),
+	  PolarArea: __webpack_require__(8),
+	  Radar: __webpack_require__(9),
+	  createClass: __webpack_require__(2).createClass
 	};
 
 
@@ -69,58 +69,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var vars = __webpack_require__(7);
+	var vars = __webpack_require__(2);
 
 	module.exports = vars.createClass('Bar', ['getBarsAtEvent']);
 
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var vars = __webpack_require__(7);
-
-	module.exports = vars.createClass('Doughnut', ['getSegmentsAtEvent']);
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var vars = __webpack_require__(7);
-
-	module.exports = vars.createClass('Line', ['getPointsAtEvent']);
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var vars = __webpack_require__(7);
-
-	module.exports = vars.createClass('Pie', ['getSegmentsAtEvent']);
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var vars = __webpack_require__(7);
-
-	module.exports = vars.createClass('PolarArea', ['getSegmentsAtEvent']);
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var vars = __webpack_require__(7);
-
-	module.exports = vars.createClass('Radar', ['getPointsAtEvent']);
-
-
-/***/ },
-/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
@@ -161,18 +116,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    classData.componentWillReceiveProps = function(nextProps) {
 	      var chart = this.state.chart;
-	      if (this.props.redraw) {
+	      if (nextProps.redraw) {
 	        chart.destroy();
 	        this.initializeChart(nextProps);
 	      } else {
 	        dataKey = dataKey || dataKeys[chart.name];
 	        updatePoints(nextProps, chart, dataKey);
+	        // chart.scale.xLabels = nextProps.data.labels;
+	        // chart.scale.calculateXLabelRotation();
 	        chart.update();
 	      }
 	    };
 
 	    classData.initializeChart = function(nextProps) {
-	      var Chart = __webpack_require__(8);
+	      var Chart = __webpack_require__(3);
 	      var el = this.getDOMNode();
 	      var ctx = el.getContext("2d");
 	      var chart = new Chart(ctx)[chartType](nextProps.data, nextProps.options || {});
@@ -197,7 +154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      extra(methodNames[i]);
 	    }
 
-	    var React = __webpack_require__(9);
+	    var React = __webpack_require__(4);
 	    return React.createClass(classData);
 	  }
 	};
@@ -213,33 +170,94 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  if (name === 'PolarArea' || name === 'Pie' || name === 'Doughnut') {
 	    nextProps.data.forEach(function(segment, segmentIndex) {
-	      chart.segments[segmentIndex].value = segment.value;
+	      if (!chart.segments[segmentIndex]) {
+	        chart.addData(segment);
+	      } else {
+	        chart.segments[segmentIndex].value = segment.value;
+	      }
 	    });
 	  } else {
+	    while (chart.scale.xLabels.length > nextProps.data.labels.length) {
+	      chart.removeData();
+	    }
 	    nextProps.data.datasets.forEach(function(set, setIndex) {
 	      set.data.forEach(function(val, pointIndex) {
-	        chart.datasets[setIndex][dataKey][pointIndex].value = val;
+	        if (typeof(chart.datasets[setIndex][dataKey][pointIndex]) == "undefined") {
+	          addData(nextProps, chart, setIndex, pointIndex);
+	        } else {
+	          chart.datasets[setIndex][dataKey][pointIndex].value = val;
+	        }
 	      });
 	    });
 	  }
 	};
 
+	var addData = function(nextProps, chart, setIndex, pointIndex) {
+	  var values = [];
+	  nextProps.data.datasets.forEach(function(set) {
+	    values.push(set.data[pointIndex]);
+	  });
+	  chart.addData(values, nextProps.data.labels[setIndex]);
+	};
 
 
 
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_4__;
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var vars = __webpack_require__(2);
+
+	module.exports = vars.createClass('Doughnut', ['getSegmentsAtEvent']);
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var vars = __webpack_require__(2);
+
+	module.exports = vars.createClass('Line', ['getPointsAtEvent']);
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var vars = __webpack_require__(2);
+
+	module.exports = vars.createClass('Pie', ['getSegmentsAtEvent']);
 
 
 /***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_8__;
+	var vars = __webpack_require__(2);
+
+	module.exports = vars.createClass('PolarArea', ['getSegmentsAtEvent']);
+
 
 /***/ },
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __WEBPACK_EXTERNAL_MODULE_9__;
+	var vars = __webpack_require__(2);
+
+	module.exports = vars.createClass('Radar', ['getPointsAtEvent']);
+
 
 /***/ }
 /******/ ])
